@@ -106,14 +106,30 @@ contract SupplyChain {
 
   constructor() public {
     // 1. Set the owner to the transaction sender
+    owner = msg.sender;
     // 2. Initialize the sku count to 0. Question, is this necessary?
+    skuCount = 0;
   }
 
   function addItem(string memory _name, uint _price) public returns (bool) {
     // 1. Create a new item and put in array
+    items[skuCount] = Item({
+      name: _name,
+      sku: skuCount,
+      price: _price,
+      state: State.ForSale,
+      seller: msg.sender,
+      buyer: address(0)
+    });
+
+
+
     // 2. Increment the skuCount by one
+    skuCount += 1;
     // 3. Emit the appropriate event
+    emit LogForSale(skuCount);
     // 4. return true
+    return true;
 
     // hint:
     // items[skuCount] = Item({
@@ -158,15 +174,15 @@ contract SupplyChain {
   function receiveItem(uint sku) public {}
 
   // Uncomment the following code block. it is needed to run tests
-  /* function fetchItem(uint _sku) public view */
-  /*   returns (string memory name, uint sku, uint price, uint state, address seller, address buyer) */
-  /* { */
-  /*   name = items[_sku].name; */
-  /*   sku = items[_sku].sku; */
-  /*   price = items[_sku].price; */
-  /*   state = uint(items[_sku].state); */
-  /*   seller = items[_sku].seller; */
-  /*   buyer = items[_sku].buyer; */
-  /*   return (name, sku, price, state, seller, buyer); */
-  /* } */
+   function fetchItem(uint _sku) public view
+     returns (string memory name, uint sku, uint price, uint state, address seller, address buyer)
+   {
+     name = items[_sku].name;
+     sku = items[_sku].sku;
+     price = items[_sku].price;
+     state = uint(items[_sku].state);
+     seller = items[_sku].seller;
+     buyer = items[_sku].buyer;
+     return (name, sku, price, state, seller, buyer);
+   }
 }
