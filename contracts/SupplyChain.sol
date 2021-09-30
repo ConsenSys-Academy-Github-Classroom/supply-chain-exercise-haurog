@@ -83,9 +83,26 @@ contract SupplyChain {
   // an Item has been added?
 
   // modifier forSale
+  modifier forSale(uint _sku) {
+    require (items[_sku].seller != address(0));
+    require (items[_sku].state == State.ForSale);
+    _;
+  }
   // modifier sold(uint _sku)
+  modifier sold(uint _sku) {
+    require (items[_sku].state == State.Sold);
+    _;
+  }
   // modifier shipped(uint _sku)
+  modifier shipped(uint _sku) {
+    require (items[_sku].state == State.Shipped);
+    _;
+  }
   // modifier received(uint _sku)
+  modifier received(uint _sku) {
+    require (items[_sku].state == State.Received);
+    _;
+  }
 
   constructor() public {
     // 1. Set the owner to the transaction sender
