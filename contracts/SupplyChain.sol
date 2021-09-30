@@ -157,21 +157,40 @@ contract SupplyChain {
   //    - check the value after the function is called to make
   //      sure the buyer is refunded any excess ether sent.
   // 6. call the event associated with this function!
-  function buyItem(uint sku) public {}
+  function buyItem(uint sku) public
+                              payable
+                              forSale(sku)
+                              checkValue(sku)
+                              paidEnough(items[sku].price) {
+    items[sku].state = State.Sold;
+    items[sku].buyer = msg.sender;
+    items[sku].seller.transfer(items[sku].price);
+    emit LogSold(sku);
+  }
 
   // 1. Add modifiers to check:
   //    - the item is sold already
   //    - the person calling this function is the seller.
   // 2. Change the state of the item to shipped.
   // 3. call the event associated with this function!
-  function shipItem(uint sku) public {}
+  function shipItem(uint sku) public
+                              sold(sku)
+                              verifyCaller(items[sku].seller) {
+    items[sku].state = State.Shipped;
+    emit LogShipped(sku);
+  }
 
   // 1. Add modifiers to check
   //    - the item is shipped already
   //    - the person calling this function is the buyer.
   // 2. Change the state of the item to received.
   // 3. Call the event associated with this function!
-  function receiveItem(uint sku) public {}
+  function receiveItem(uint sku) public
+                                 shipped(sku)
+                                 verifyCaller(items[sku].buyer) {
+    items[sku].state = State.Received;
+    emit LogReceived(sku);
+  }
 
   // Uncomment the following code block. it is needed to run tests
    function fetchItem(uint _sku) public view
